@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:text="蓝牙名称"
             android:id="@+id/tv_bt_name"
-            android:textColor="@color/text_01"
+            android:textColor="#111111"
             android:layout_gravity="center"/>
     </LinearLayout>
     <LinearLayout
@@ -25,6 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:textColor="#999999"
             android:id="@+id/tv_bt_mac"
             android:textSize="11sp"
             android:text="蓝牙MAC"/>

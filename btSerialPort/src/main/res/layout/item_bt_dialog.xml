@@ -12,6 +12,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
+            android:textColor="#222222"
             android:text="已配对设备"/>
     </LinearLayout>
     <LinearLayout
@@ -33,6 +34,6 @@
             android:text="关闭"
             android:textSize="16sp"
             android:id="@+id/tv_close"
-            android:textColor="@color/setbtn"/>
+            android:textColor="#d82032"/>
     </LinearLayout>
 </LinearLayout>

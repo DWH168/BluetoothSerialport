@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,26 +20,29 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+
+/**
+ * 微信公众号：智慧小巷
+ * 日期：2020 8月24日
+ */
 public class BluetoothUtils {
 
 
-	public final static int CON_SUCCESS = 5;
-	public final static int CON_Fail = 7;
-	public final static int DIS_CON = 8;
-	public final static int RE_DATA = 6;
 
 	private static BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();;
 
 	private static Context context;
-	//连接状态
+	//连接状态标志位
 	public static boolean isConnected = false;
 
 	private static ConnectStateChange connectStateChange;
@@ -127,6 +131,11 @@ public class BluetoothUtils {
 	{
 		if (bluetoothAdapter.isEnabled()) {
 			bluetoothAdapter.disable();
+			if(isConnected) {
+
+				isConnected = false;
+				connectStateChange.onDisConnect();
+			}
 		}
 	}
 
@@ -144,6 +153,15 @@ public class BluetoothUtils {
 			}
 		}
 		return deviceList;
+	}
+
+	/**
+	 * 获取连接状态
+	 * @return
+	 */
+	public static boolean getConnectStatus()
+	{
+		return isConnected;
 	}
 
 	/**
@@ -289,60 +307,18 @@ public class BluetoothUtils {
 			// 开始监听数据接收
 			try {
 				InputStream inputStream = bluetoothSocket.getInputStream();
-				byte[] result = new byte[0];
-				while (isRunning) {
-					byte[] buffer = new byte[256];
-					// 等待有数据
-					while (inputStream.available() == 0 && isRunning) {
-						if (System.currentTimeMillis() < 0) {
-							break;
-						}
-					}
-					while (isRunning) {
-						try {
-							int num = inputStream.read(buffer);
-							byte[] temp = new byte[result.length + num];
-							System.arraycopy(result, 0, temp, 0, result.length);
-							System.arraycopy(buffer, 0, temp, result.length, num);
-							result = temp;
-							if (inputStream.available() == 0) {
-								break;
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-							connectStateChange.onConnectFailed("接收数据单次失败：" + e.getMessage());
-
-							break;
-						}
-					}
-
+				int bytes;
+ 				while (isRunning) {
+					//接收数据
+					byte[] buffer = new byte[1024];
 					try {
-						// 返回数据
-						byte[] stopFlag = stopString.getBytes();
-						int stopFlagSize = stopFlag.length;
-						boolean shouldCallOnReceiveBytes = false;
-						for (int i = stopFlagSize - 1; i >= 0; i--) {
-							int indexResult = result.length - (stopFlagSize - i);
-							if (indexResult >= result.length || indexResult < 0) {
-								shouldCallOnReceiveBytes = false;
-								break;
-							}
-							if (stopFlag[i] == result[indexResult]) {
-								shouldCallOnReceiveBytes = true;
-							} else {
-								shouldCallOnReceiveBytes = false;
-							}
-						}
-
-						if (shouldCallOnReceiveBytes) {
-							receiveBytes.onReceiveBytes(result);
-							// 清空
-							result = new byte[0];
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
+						bytes = inputStream.read(buffer);
+						byte[] bytes1 = new byte[bytes];
+						System.arraycopy(buffer, 0, bytes1, 0, bytes);
+						receiveBytes.onReceiveBytes(bytes1);
+					} catch (IOException e) {
+						break;
 					}
-
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

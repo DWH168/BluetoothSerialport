@@ -1,0 +1,3 @@
+include ':btSerialPort'
+include ':app'
+rootProject.name = "蓝牙DEMO"

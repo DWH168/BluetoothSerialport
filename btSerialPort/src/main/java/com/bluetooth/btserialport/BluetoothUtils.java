@@ -132,8 +132,8 @@ public class BluetoothUtils {
 		if (bluetoothAdapter.isEnabled()) {
 			bluetoothAdapter.disable();
 			if(isConnected) {
-
 				isConnected = false;
+				if(connectStateChange != null)
 				connectStateChange.onDisConnect();
 			}
 		}
@@ -209,10 +209,12 @@ public class BluetoothUtils {
 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 				// 从intent中获取设备
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				searchDevice.onFoundDevice(device);
+				if(searchDevice != null)
+					searchDevice.onFoundDevice(device);
 				Log.d("TAG","发现新设备");
 				// 搜索完成
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+				if(searchDevice != null)
 				searchDevice.onFinishFoundDevice();
 			}
 		}
@@ -315,6 +317,7 @@ public class BluetoothUtils {
 						bytes = inputStream.read(buffer);
 						byte[] bytes1 = new byte[bytes];
 						System.arraycopy(buffer, 0, bytes1, 0, bytes);
+						if(receiveBytes != null)
 						receiveBytes.onReceiveBytes(bytes1);
 					} catch (IOException e) {
 						break;

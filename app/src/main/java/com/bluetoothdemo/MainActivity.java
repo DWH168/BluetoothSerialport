@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     EditText et_re;
     EditText et_send;
     Button btn_send;
+    Button btn_open;
+    Button btn_close;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
         et_re = findViewById(R.id.et_re);
         et_send = findViewById(R.id.et_send);
         btn_send = findViewById(R.id.btn_send);
+        btn_open = findViewById(R.id.btn_open);
+        btn_close = findViewById(R.id.btn_close);
 
         btn_show.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +50,18 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
               if(et_send.getText().toString().isEmpty())return;
                 bluetoothUtils.send(et_send.getText().toString());
+            }
+        });
+        btn_open.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bluetoothUtils.openBluetooth();
+            }
+        });
+        btn_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bluetoothUtils.closeBluetooth();
             }
         });
     }
@@ -74,7 +90,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDisConnect() {
-
+                Message message = new Message();
+                message.what = 4;
+                handler.sendMessage(message);
             }
         });
 
@@ -115,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 3:
                     Toast.makeText(MainActivity.this,msg.obj.toString(),Toast.LENGTH_SHORT).show();
+                    break;
+                case 4:
+                    Toast.makeText(MainActivity.this,"设备已断开连接",Toast.LENGTH_SHORT).show();
                     break;
             }
         }

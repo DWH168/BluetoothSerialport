@@ -320,16 +320,12 @@ public class BluetoothUtils {
 						if(receiveBytes != null)
 						receiveBytes.onReceiveBytes(bytes1);
 					} catch (IOException e) {
-						break;
+						e.printStackTrace();
 					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				if(connectStateChange != null)
-					connectStateChange.onConnectFailed("连接失败：" + e.getMessage());
-				DevicesAdapter.progressDialog.cancel();
 			}
-
 			return null;
 		}
 
